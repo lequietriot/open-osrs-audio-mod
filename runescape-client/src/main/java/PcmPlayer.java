@@ -259,7 +259,7 @@ public class PcmPlayer {
 
 				while (var1 > this.timeMs + 5000L) { // L: 128
 					this.skip(256); // L: 129
-					this.timeMs += (long)(256000 / UserComparator2.field4359); // L: 130
+					this.timeMs += (long)(256000 / UserComparator2.sampleRate); // L: 130
 				}
 			} catch (Exception var6) { // L: 133
 				this.timeMs = var1; // L: 134
@@ -355,7 +355,7 @@ public class PcmPlayer {
 		class321.clearIntArray(var1, 0, var3); // L: 180
 		this.field267 -= var2; // L: 181
 		if (this.stream != null && this.field267 <= 0) { // L: 182
-			this.field267 += UserComparator2.field4359 >> 4; // L: 183
+			this.field267 += UserComparator2.sampleRate >> 4; // L: 183
 			KitDefinition.PcmStream_disable(this.stream); // L: 184
 			this.method719(this.stream, this.stream.vmethod974()); // L: 185
 			int var4 = 0; // L: 186

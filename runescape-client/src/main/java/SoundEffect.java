@@ -11,7 +11,7 @@ public class SoundEffect {
 		descriptor = "[Lbg;"
 	)
 	@Export("instruments")
-	Instrument[] instruments;
+	SoundTone[] soundTones;
 	@ObfuscatedName("s")
 	@Export("start")
 	int start;
@@ -23,14 +23,14 @@ public class SoundEffect {
 		descriptor = "(Lop;)V"
 	)
 	SoundEffect(Buffer var1) {
-		this.instruments = new Instrument[10]; // L: 10
+		this.soundTones = new SoundTone[10]; // L: 10
 
 		for (int var2 = 0; var2 < 10; ++var2) { // L: 21
 			int var3 = var1.readUnsignedByte(); // L: 22
 			if (var3 != 0) { // L: 23
 				--var1.offset; // L: 24
-				this.instruments[var2] = new Instrument(); // L: 25
-				this.instruments[var2].decode(var1); // L: 26
+				this.soundTones[var2] = new SoundTone(); // L: 25
+				this.soundTones[var2].decode(var1); // L: 26
 			}
 		}
 
@@ -55,8 +55,8 @@ public class SoundEffect {
 
 		int var2;
 		for (var2 = 0; var2 < 10; ++var2) { // L: 39
-			if (this.instruments[var2] != null && this.instruments[var2].offset / 20 < var1) { // L: 40 41
-				var1 = this.instruments[var2].offset / 20;
+			if (this.soundTones[var2] != null && this.soundTones[var2].offset / 20 < var1) { // L: 40 41
+				var1 = this.soundTones[var2].offset / 20;
 			}
 		}
 
@@ -66,8 +66,8 @@ public class SoundEffect {
 
 		if (var1 != 9999999 && var1 != 0) { // L: 45
 			for (var2 = 0; var2 < 10; ++var2) { // L: 46
-				if (this.instruments[var2] != null) {
-					Instrument var10000 = this.instruments[var2];
+				if (this.soundTones[var2] != null) {
+					SoundTone var10000 = this.soundTones[var2];
 					var10000.offset -= var1 * 20; // L: 47
 				}
 			}
@@ -90,8 +90,8 @@ public class SoundEffect {
 
 		int var2;
 		for (var2 = 0; var2 < 10; ++var2) { // L: 58
-			if (this.instruments[var2] != null && this.instruments[var2].duration + this.instruments[var2].offset > var1) { // L: 59 60
-				var1 = this.instruments[var2].duration + this.instruments[var2].offset;
+			if (this.soundTones[var2] != null && this.soundTones[var2].duration + this.soundTones[var2].offset > var1) { // L: 59 60
+				var1 = this.soundTones[var2].duration + this.soundTones[var2].offset;
 			}
 		}
 
@@ -102,10 +102,10 @@ public class SoundEffect {
 			byte[] var3 = new byte[var2]; // L: 65
 
 			for (int var4 = 0; var4 < 10; ++var4) { // L: 66
-				if (this.instruments[var4] != null) { // L: 67
-					int var5 = this.instruments[var4].duration * 22050 / 1000; // L: 68
-					int var6 = this.instruments[var4].offset * 22050 / 1000; // L: 69
-					int[] var7 = this.instruments[var4].synthesize(var5, this.instruments[var4].duration); // L: 70
+				if (this.soundTones[var4] != null) { // L: 67
+					int var5 = this.soundTones[var4].duration * 22050 / 1000; // L: 68
+					int var6 = this.soundTones[var4].offset * 22050 / 1000; // L: 69
+					int[] var7 = this.soundTones[var4].synthesize(var5, this.soundTones[var4].duration); // L: 70
 
 					for (int var8 = 0; var8 < var5; ++var8) { // L: 71
 						int var9 = (var7[var8] >> 8) + var3[var8 + var6]; // L: 72

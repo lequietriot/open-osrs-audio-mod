@@ -245,7 +245,7 @@ public class MidiPcmStream extends PcmStream {
 	@Export("fill")
 	protected synchronized void fill(int[] var1, int var2, int var3) {
 		if (this.midiFile.isReady()) { // L: 481
-			int var4 = this.midiFile.division * this.field2931 / UserComparator2.field4359; // L: 482
+			int var4 = this.midiFile.division * this.field2931 / UserComparator2.sampleRate; // L: 482
 
 			do {
 				long var5 = this.field2953 + (long)var4 * (long)var3; // L: 484
@@ -294,7 +294,7 @@ public class MidiPcmStream extends PcmStream {
 	@Export("skip")
 	protected synchronized void skip(int var1) {
 		if (this.midiFile.isReady()) { // L: 502
-			int var2 = this.midiFile.division * this.field2931 / UserComparator2.field4359; // L: 503
+			int var2 = this.midiFile.division * this.field2931 / UserComparator2.sampleRate; // L: 503
 
 			do {
 				long var3 = (long)var1 * (long)var2 + this.field2953; // L: 505
@@ -519,7 +519,7 @@ public class MidiPcmStream extends PcmStream {
 		for (MusicPatchNode var2 = (MusicPatchNode)this.patchStream.queue.last(); var2 != null; var2 = (MusicPatchNode)this.patchStream.queue.previous()) { // L: 236
 			if (var1 < 0 || var2.field2996 == var1) { // L: 237
 				if (var2.stream != null) { // L: 238
-					var2.stream.method830(UserComparator2.field4359 / 100); // L: 239
+					var2.stream.method830(UserComparator2.sampleRate / 100); // L: 239
 					if (var2.stream.method834()) { // L: 240
 						this.patchStream.mixer.addSubStream(var2.stream);
 					}
@@ -858,7 +858,7 @@ public class MidiPcmStream extends PcmStream {
 			var2 += (int)(var6 * (double)var4); // L: 424
 		}
 
-		var4 = (int)((double)(var1.rawSound.sampleRate * 256) * Math.pow(2.0D, (double)var2 * 3.255208333333333E-4D) / (double)UserComparator2.field4359 + 0.5D); // L: 426
+		var4 = (int)((double)(var1.rawSound.sampleRate * 256) * Math.pow(2.0D, (double)var2 * 3.255208333333333E-4D) / (double)UserComparator2.sampleRate + 0.5D); // L: 426
 		return var4 < 1 ? 1 : var4; // L: 427
 	}
 
@@ -990,7 +990,7 @@ public class MidiPcmStream extends PcmStream {
 		garbageValue = "-47865740"
 	)
 	boolean method4788(MusicPatchNode var1, int[] var2, int var3, int var4) {
-		var1.field2995 = UserComparator2.field4359 / 100; // L: 568
+		var1.field2995 = UserComparator2.sampleRate / 100; // L: 568
 		if (var1.field2999 < 0 || var1.stream != null && !var1.stream.method833()) { // L: 569
 			int var5 = var1.field2998; // L: 577
 			if (var5 > 0) { // L: 578

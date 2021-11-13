@@ -12,7 +12,7 @@ public class UserComparator2 implements Comparator {
 	@ObfuscatedGetter(
 		intValue = 419330147
 	)
-	public static int field4359;
+	public static int sampleRate;
 	@ObfuscatedName("i")
 	@Export("reversed")
 	final boolean reversed;

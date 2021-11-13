@@ -28,7 +28,7 @@ public class class247 {
 		intValue = 1167067929
 	)
 	@Export("musicPlayerStatus")
-	public static int musicPlayerStatus;
+	public static int musicPlayerStatus; //0 = ready, 1 = Fanfares, 2 = Music
 	@ObfuscatedName("j")
 	@ObfuscatedGetter(
 		intValue = 2050223797

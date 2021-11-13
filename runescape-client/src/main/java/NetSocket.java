@@ -413,12 +413,12 @@ public final class NetSocket extends AbstractSocket implements Runnable {
 			Archive var29;
 			if (Client.titleLoadingStage == 45) { // L: 2090
 				boolean var38 = !Client.isLowDetail; // L: 2091
-				UserComparator2.field4359 = 22050; // L: 2094
-				PcmPlayer.PcmPlayer_stereo = var38; // L: 2095
+				UserComparator2.sampleRate = AudioPreferences.sampleRate; // L: 2094 - Original: 22050
+				PcmPlayer.PcmPlayer_stereo = AudioPreferences.stereoSound; // L: 2095 - Original - var38
 				PcmPlayer.field272 = 2; // L: 2096
 				MidiPcmStream var34 = new MidiPcmStream(); // L: 2098
 				var34.method4761(9, 128); // L: 2099
-				HealthBar.pcmPlayer0 = class112.method2522(GameEngine.taskHandler, 0, 22050); // L: 2100
+				HealthBar.pcmPlayer0 = class112.method2522(GameEngine.taskHandler, 0, AudioPreferences.sampleRate); // L: 2100 - Original: 22050
 				HealthBar.pcmPlayer0.setStream(var34); // L: 2101
 				var27 = Archive.archive15; // L: 2102
 				var28 = SecureRandomCallable.archive14; // L: 2103
@@ -430,7 +430,7 @@ public final class NetSocket extends AbstractSocket implements Runnable {
 				ScriptEvent.pcmPlayer1 = class112.method2522(GameEngine.taskHandler, 1, 2048); // L: 2111
 				BuddyRankComparator.pcmStreamMixer = new PcmStreamMixer(); // L: 2112
 				ScriptEvent.pcmPlayer1.setStream(BuddyRankComparator.pcmStreamMixer); // L: 2113
-				FontName.decimator = new Decimator(22050, UserComparator2.field4359); // L: 2114
+				FontName.decimator = new Decimator(AudioPreferences.sampleRate, UserComparator2.sampleRate); // L: 2114 - Original: 22050
 				Login.Login_loadingText = "Prepared sound engine"; // L: 2115
 				Login.Login_loadingPercent = 35; // L: 2116
 				Client.titleLoadingStage = 50; // L: 2117

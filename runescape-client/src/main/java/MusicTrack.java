@@ -3,6 +3,11 @@ import net.runelite.mapping.Implements;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 @ObfuscatedName("iv")
 @Implements("MusicTrack")
 public class MusicTrack extends Node {
@@ -337,6 +342,29 @@ public class MusicTrack extends Node {
 
 	@ObfuscatedName("w")
 	void method4981() {
+		//This overrides the current fanfare OR music track where applicable.
+		//Music and fanfare files are found here: /runescape-client/src/test/resources/audio/
+		if (AudioPreferences.useCustomResources) {
+			if (class247.musicPlayerStatus == 2) {
+				try {
+					if (new File(AudioPreferences.customResourceFolder + "/music/" + FillMode.musicTrackGroupId + ".mid/").exists()) {
+						midi = Files.readAllBytes(Paths.get(AudioPreferences.customResourceFolder + "/music/" + FillMode.musicTrackGroupId + ".mid/"));
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (class247.musicPlayerStatus == 1)
+			{
+				try {
+					if (new File(AudioPreferences.customResourceFolder + "/fanfares/" + FillMode.musicTrackGroupId + ".mid/").exists()) {
+						midi = Files.readAllBytes(Paths.get(AudioPreferences.customResourceFolder + "/fanfares/" + FillMode.musicTrackGroupId + ".mid/"));
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		if (this.table == null) { // L: 274
 			this.table = new NodeHashTable(16); // L: 275
 			int[] var1 = new int[16]; // L: 276
