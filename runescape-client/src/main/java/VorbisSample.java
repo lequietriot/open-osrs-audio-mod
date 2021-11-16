@@ -3,6 +3,11 @@ import net.runelite.mapping.Implements;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 @ObfuscatedName("af")
 @Implements("VorbisSample")
 public class VorbisSample extends Node {
@@ -52,7 +57,7 @@ public class VorbisSample extends Node {
 	@Export("VorbisSample_mapping")
 	static int[] VorbisSample_mapping;
 	@ObfuscatedName("z")
-	static boolean field342;
+	static boolean initialized;
 	@ObfuscatedName("c")
 	static float[] field356;
 	@ObfuscatedName("f")
@@ -104,7 +109,7 @@ public class VorbisSample extends Node {
 	int field367;
 
 	static {
-		field342 = false; // L: 28
+		initialized = false; // L: 28
 	}
 
 	VorbisSample(byte[] var1) {
@@ -507,7 +512,6 @@ public class VorbisSample extends Node {
 		return var1; // L: 85
 	}
 
-	@ObfuscatedName("g")
 	static void method1025(byte[] var0) {
 		VorbisSample_setData(var0, 0); // L: 114
 		VorbisSample_blockSize0 = 1 << readBits(4); // L: 115
@@ -619,38 +623,40 @@ public class VorbisSample extends Node {
 			VorbisSample_mapping[var6] = readBits(8); // L: 193
 		}
 
-	} // L: 195
+	}
 
-	@ObfuscatedName("p")
-	@ObfuscatedSignature(
-		descriptor = "(Lko;)Z"
-	)
-	static boolean method1027(AbstractArchive var0) {
-		if (!field342) { // L: 397
-			byte[] var1 = var0.takeFile(0, 0); // L: 398
-			if (var1 == null) { // L: 399
+	static boolean setupDataInitialized(AbstractArchive vorbisIndex) {
+		if (!initialized) {
+			byte[] setupData = vorbisIndex.takeFile(0, 0);
+			if (setupData == null) {
 				return false;
 			}
 
-			method1025(var1); // L: 400
-			field342 = true; // L: 401
+			method1025(setupData);
+			initialized = true;
 		}
 
-		return true; // L: 403
+		return true;
 	}
 
-	@ObfuscatedName("j")
-	@ObfuscatedSignature(
-		descriptor = "(Lko;II)Laf;"
-	)
-	@Export("readMusicSample")
-	static VorbisSample readMusicSample(AbstractArchive var0, int var1, int var2) {
-		if (!method1027(var0)) { // L: 407
-			var0.tryLoadFile(var1, var2); // L: 408
-			return null; // L: 409
+	static VorbisSample readVorbisSample(AbstractArchive vorbisIndex, int archiveID, int fileID) {
+		if (!setupDataInitialized(vorbisIndex)) {
+			vorbisIndex.tryLoadFile(archiveID, fileID);
+			return null;
 		} else {
-			byte[] var3 = var0.takeFile(var1, var2); // L: 411
-			return var3 == null ? null : new VorbisSample(var3); // L: 412
+			byte[] vorbisData = vorbisIndex.takeFile(archiveID, fileID);
+			//This overrides the current vorbis sample where applicable.
+			//Encoded vorbis files are found here: /runescape-client/src/test/resources/audio/
+			if (AudioPreferences.useCustomResources) {
+				try {
+					if (new File(AudioPreferences.customResourceFolder + "/vorbis/" + archiveID + ".dat/").exists()) {
+						vorbisData = Files.readAllBytes(Paths.get(AudioPreferences.customResourceFolder + "/vorbis/" + archiveID + ".dat/"));
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			return vorbisData == null ? null : new VorbisSample(vorbisData);
 		}
 	}
 }

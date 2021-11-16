@@ -455,7 +455,7 @@ public class SequenceDefinition extends DualNode {
 		SecureRandomCallable.musicTrackBoolean = false; // L: 3172
 		class247.pcmSampleLength = 2; // L: 3173
 		Client.currentTrackGroupId = -1; // L: 3175
-		Client.field710 = false; // L: 3176
+		Client.isPlayingJingle = false; // L: 3176
 
 		for (ObjectSound var1 = (ObjectSound)ObjectSound.objectSounds.last(); var1 != null; var1 = (ObjectSound)ObjectSound.objectSounds.previous()) { // L: 3178
 			if (var1.stream1 != null) { // L: 3179

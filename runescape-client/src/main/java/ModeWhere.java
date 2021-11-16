@@ -169,9 +169,9 @@ public enum ModeWhere implements MouseWheel {
 	)
 	@Export("playSong")
 	static void playSong(int var0) {
-		if (var0 == -1 && !Client.field710) { // L: 4078
+		if (var0 == -1 && !Client.isPlayingJingle) { // L: 4078
 			WorldMapCacheName.method4027(); // L: 4079
-		} else if (var0 != -1 && var0 != Client.currentTrackGroupId && class408.clientPreferences.musicVolume != 0 && !Client.field710) { // L: 4081
+		} else if (var0 != -1 && var0 != Client.currentTrackGroupId && class408.clientPreferences.musicVolume != 0 && !Client.isPlayingJingle) { // L: 4081
 			Archive var1 = Messages.archive6; // L: 4082
 			int var2 = class408.clientPreferences.musicVolume; // L: 4083
 			class247.musicPlayerStatus = 1; // L: 4085

@@ -4,6 +4,11 @@ import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 @ObfuscatedName("io")
 @Implements("MidiPcmStream")
 public class MidiPcmStream extends PcmStream {
@@ -160,10 +165,21 @@ public class MidiPcmStream extends PcmStream {
 		}
 
 		for (ByteArrayNode var7 = (ByteArrayNode)var1.table.first(); var7 != null; var7 = (ByteArrayNode)var1.table.next()) { // L: 62
-			int var8 = (int)var7.key; // L: 63
-			MusicPatch var9 = (MusicPatch)this.musicPatches.get((long)var8); // L: 64
+			int var8 = (int) var7.key; // L: 63
+			MusicPatch var9 = (MusicPatch) this.musicPatches.get(var8); // L: 64
 			if (var9 == null) { // L: 65
 				byte[] var11 = var2.takeFileFlat(var8); // L: 68
+				//This overrides the current instrument patch where applicable.
+				//Encoded instrument patch files are found here: /runescape-client/src/test/resources/audio/
+				if (AudioPreferences.useCustomResources) {
+					try {
+						if (new File(AudioPreferences.customResourceFolder + "/instruments/" + var8 + ".dat/").exists()) {
+							var11 = Files.readAllBytes(Paths.get(AudioPreferences.customResourceFolder + "/instruments/" + var8 + ".dat/"));
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 				MusicPatch var10;
 				if (var11 == null) { // L: 69
 					var10 = null; // L: 70

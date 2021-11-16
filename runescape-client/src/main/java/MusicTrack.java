@@ -345,7 +345,7 @@ public class MusicTrack extends Node {
 		//This overrides the current fanfare OR music track where applicable.
 		//Music and fanfare files are found here: /runescape-client/src/test/resources/audio/
 		if (AudioPreferences.useCustomResources) {
-			if (class247.musicPlayerStatus == 2) {
+			if (!Client.isPlayingJingle) {
 				try {
 					if (new File(AudioPreferences.customResourceFolder + "/music/" + FillMode.musicTrackGroupId + ".mid/").exists()) {
 						midi = Files.readAllBytes(Paths.get(AudioPreferences.customResourceFolder + "/music/" + FillMode.musicTrackGroupId + ".mid/"));
@@ -354,7 +354,7 @@ public class MusicTrack extends Node {
 					e.printStackTrace();
 				}
 			}
-			if (class247.musicPlayerStatus == 1)
+			if (Client.isPlayingJingle)
 			{
 				try {
 					if (new File(AudioPreferences.customResourceFolder + "/fanfares/" + FillMode.musicTrackGroupId + ".mid/").exists()) {

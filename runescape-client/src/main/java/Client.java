@@ -40,7 +40,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 	)
 	static long field687;
 	@ObfuscatedName("rg")
-	static boolean field710;
+	static boolean isPlayingJingle;
 	@ObfuscatedName("pf")
 	static boolean[] field594;
 	@ObfuscatedName("pc")
@@ -1572,7 +1572,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 		destinationY = 0; // L: 562
 		minimapState = 0; // L: 569
 		currentTrackGroupId = -1; // L: 570
-		field710 = false; // L: 571
+		isPlayingJingle = false; // L: 571
 		soundEffectCount = 0; // L: 577
 		soundEffectIds = new int[50]; // L: 578
 		queuedSoundEffectLoops = new int[50]; // L: 579
@@ -2710,7 +2710,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 			var2 = false; // L: 1578
 		}
 
-		if (var2 && field710 && HealthBar.pcmPlayer0 != null) { // L: 1581 1582
+		if (var2 && isPlayingJingle && HealthBar.pcmPlayer0 != null) { // L: 1581 1582
 			HealthBar.pcmPlayer0.tryDiscard();
 		}
 
@@ -4314,7 +4314,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 							}
 						}
 
-						if (field710) { // L: 3626
+						if (isPlayingJingle) { // L: 3626
 							if (class247.musicPlayerStatus != 0) { // L: 3629
 								var32 = true; // L: 3630
 							} else {
@@ -4335,7 +4335,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 									class247.pcmSampleLength = 10000; // L: 3647
 								}
 
-								field710 = false; // L: 3650
+								isPlayingJingle = false; // L: 3650
 							}
 						}
 

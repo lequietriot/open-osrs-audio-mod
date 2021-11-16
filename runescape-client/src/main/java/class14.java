@@ -1152,10 +1152,10 @@ public class class14 {
 				class247.musicTrackVolume = var0; // L: 11386
 				SecureRandomCallable.musicTrackBoolean = false; // L: 11387
 				class247.pcmSampleLength = 10000; // L: 11388
-				Client.field710 = false; // L: 11390
+				Client.isPlayingJingle = false; // L: 11390
 			} else if (var0 == 0) { // L: 11392
 				WorldMapCacheName.method4027(); // L: 11393
-				Client.field710 = false; // L: 11394
+				Client.isPlayingJingle = false; // L: 11394
 			} else {
 				WorldMapSection0.method3917(var0); // L: 11396
 			}

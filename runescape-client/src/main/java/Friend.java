@@ -72,7 +72,7 @@ public class Friend extends Buddy {
 			class247.musicTrackVolume = var3; // L: 4106
 			SecureRandomCallable.musicTrackBoolean = false; // L: 4107
 			class247.pcmSampleLength = 10000; // L: 4108
-			Client.field710 = true; // L: 4110
+			Client.isPlayingJingle = true; // L: 4110
 		}
 
 	} // L: 4112
