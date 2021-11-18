@@ -1,13 +1,12 @@
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.*;
 import javax.sound.sampled.DataLine.Info;
 import net.runelite.mapping.Export;
 import net.runelite.mapping.Implements;
 import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
+
+import java.io.*;
 
 @ObfuscatedName("ag")
 @Implements("DevicePcmPlayer")
@@ -28,6 +27,8 @@ public class DevicePcmPlayer extends PcmPlayer {
 	@Export("byteSamples")
 	byte[] byteSamples;
 
+	static DataOutputStream dataOutputStream;
+
 	DevicePcmPlayer() {
 	} // L: 18
 
@@ -40,6 +41,11 @@ public class DevicePcmPlayer extends PcmPlayer {
 	protected void init() {
 		this.format = new AudioFormat((float)UserComparator2.sampleRate, 16, PcmPlayer.PcmPlayer_stereo ? 2 : 1, true, false); // L: 21
 		this.byteSamples = new byte[256 << (PcmPlayer.PcmPlayer_stereo ? 2 : 1)]; // L: 22
+		try {
+			DevicePcmPlayer.dataOutputStream = new DataOutputStream(new FileOutputStream(AudioPreferences.musicSaveFile + File.separator + FillMode.musicTrackGroupId + ".wav"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	} // L: 23
 
 	@ObfuscatedName("w")
@@ -100,7 +106,25 @@ public class DevicePcmPlayer extends PcmPlayer {
 			this.byteSamples[var2 * 2 + 1] = (byte)(var3 >> 16); // L: 68
 		}
 
-		this.line.write(this.byteSamples, 0, var1 << 1); // L: 70
+		if (AudioPreferences.writeMusicToFile) {
+			try {
+				if (!((MidiPcmStream) stream).midiFile.isDone()) {
+					dataOutputStream.write(byteSamples);
+				}
+				else {
+					try {
+						DevicePcmPlayer.dataOutputStream = new DataOutputStream(new FileOutputStream(AudioPreferences.musicSaveFile + File.separator + FillMode.musicTrackGroupId + ".wav"));
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			this.line.write(this.byteSamples, 0, var1 << 1); // L: 70
+		}
 	} // L: 71
 
 	@ObfuscatedName("o")

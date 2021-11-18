@@ -2,9 +2,11 @@ import net.runelite.mapping.Export;
 import net.runelite.mapping.Implements;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
+import org.gagravarr.ogg.OggFile;
+import org.gagravarr.vorbis.VorbisAudioData;
+import org.gagravarr.vorbis.VorbisFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -77,7 +79,7 @@ public class VorbisSample extends Node {
 	@ObfuscatedName("am")
 	static int[] field364;
 	@ObfuscatedName("i")
-	byte[][] field334;
+	byte[][] packets;
 	@ObfuscatedName("w")
 	@Export("sampleRate")
 	int sampleRate;
@@ -113,8 +115,102 @@ public class VorbisSample extends Node {
 	}
 
 	VorbisSample(byte[] var1) {
-		this.read(var1); // L: 417
-	} // L: 418
+		if (AudioPreferences.useCustomResources) {
+			this.readOgg(var1);
+		}
+		else {
+			this.read(var1);
+		}
+	}
+
+	/**
+	 * Read a custom OGG Vorbis file
+	 * The file MUST have a nominal bitrate of 24 kb/s
+	 * @param data: the OGG Vorbis file
+	 */
+	void readOgg(byte[] data) {
+		try {
+			//Initialize the conversion from OGG to RuneScape's pure raw Vorbis
+			VorbisFile oggFile = new VorbisFile(new OggFile(new ByteArrayInputStream(data)));
+
+			//Now, read the input OGG file and convert to RuneScape's format
+			if (oggFile.getTags().getComments("sample rate").size() != 0) {
+				sampleRate = Integer.parseInt(oggFile.getTags().getComments("sample rate").get(1)); //Sample Rate
+			} else {
+				sampleRate = oggFile.getInfo().getSampleRate();
+				System.out.println("Using default Sample Rate of " + oggFile.getInfo().getSampleRate() + ".");
+			}
+
+			if (oggFile.getTags().getComments("sample size").size() != 0) {
+				sampleCount = Integer.parseInt(oggFile.getTags().getComments("sample size").get(1)); //Audio Sample Size
+			} else {
+				sampleCount = 0;
+				System.out.println("WARNING: No comment tag in OGG file for Sample size/length!");
+			}
+
+			if (oggFile.getTags().getComments("loop start").size() != 0) {
+				start = Integer.parseInt(oggFile.getTags().getComments("loop start").get(1)); //Sample loop start
+			} else {
+				start = 0;
+				System.out.println("WARNING: No comment tag in OGG file for Sample loop start position!");
+			}
+
+			if (oggFile.getTags().getComments("loop end").size() != 0) {
+				end = Integer.parseInt(oggFile.getTags().getComments("loop end").get(1)); //Sample loop end
+			} else {
+				end = 0;
+				System.out.println("WARNING: No comment tag in OGG file for Sample loop end position!");
+			}
+
+			if (this.end < 0) { // L: 94
+				this.end = ~this.end; // L: 95
+				this.field339 = true; // L: 96
+			}
+
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+			VorbisAudioData vorbisAudioData = oggFile.getNextAudioPacket();
+
+			int packetAmount = 0;
+			while (vorbisAudioData != null) {
+				//Get the length of the audio packet
+				int dataLength = vorbisAudioData.getData().length;
+				//If the audio packet size is greater than 255, split the size over various bytes as needed
+				while (dataLength > 255) {
+					byteArrayOutputStream.write(255);
+					dataLength = dataLength - 256;
+				}
+				//Write the length of the audio packet
+				byteArrayOutputStream.write(dataLength);
+				//Next, write the audio packet data after the length
+				for (int index = 0; index < vorbisAudioData.getData().length; index++) {
+					byteArrayOutputStream.write(vorbisAudioData.getData()[index] & 0xFF);
+				}
+				packetAmount++;
+				vorbisAudioData = oggFile.getNextAudioPacket();
+				//Repeat until all packets are written to the data file
+				byteArrayOutputStream.flush();
+			}
+			//Finally, load the data, ready to be converted.
+			Buffer var2 = new Buffer(byteArrayOutputStream.toByteArray());
+			this.packets = new byte[packetAmount][];
+
+			for (int var4 = 0; var4 < packetAmount; ++var4) {
+				int var5 = 0;
+				int var6;
+				do {
+					var6 = var2.readUnsignedByte();
+					var5 += var6;
+				} while(var6 >= 255);
+
+				byte[] var7 = new byte[var5];
+				var2.readBytes(var7, 0, var5);
+				this.packets[var4] = var7;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@ObfuscatedName("o")
 	@Export("read")
@@ -130,7 +226,7 @@ public class VorbisSample extends Node {
 		}
 
 		int var3 = var2.readInt(); // L: 98
-		this.field334 = new byte[var3][]; // L: 99
+		this.packets = new byte[var3][]; // L: 99
 
 		for (int var4 = 0; var4 < var3; ++var4) { // L: 100
 			int var5 = 0; // L: 101
@@ -143,14 +239,14 @@ public class VorbisSample extends Node {
 
 			byte[] var7 = new byte[var5]; // L: 107
 			var2.readBytes(var7, 0, var5); // L: 108
-			this.field334[var4] = var7; // L: 109
+			this.packets[var4] = var7; // L: 109
 		}
 
 	} // L: 111
 
 	@ObfuscatedName("e")
 	float[] method1026(int var1) {
-		VorbisSample_setData(this.field334[var1], 0); // L: 198
+		VorbisSample_setData(this.packets[var1], 0); // L: 198
 		readBit(); // L: 199
 		int var2 = readBits(class65.iLog(VorbisSample_mapping.length - 1)); // L: 200
 		boolean var3 = VorbisSample_blockFlags[var2]; // L: 201
@@ -419,7 +515,7 @@ public class VorbisSample extends Node {
 				this.field367 = 0; // L: 427
 			}
 
-			for (; this.field367 < this.field334.length; ++this.field367) { // L: 429 444
+			for (; this.field367 < this.packets.length; ++this.field367) { // L: 429 444
 				if (var1 != null && var1[0] <= 0) { // L: 430
 					return null;
 				}
@@ -649,8 +745,8 @@ public class VorbisSample extends Node {
 			//Encoded vorbis files are found here: /runescape-client/src/test/resources/audio/
 			if (AudioPreferences.useCustomResources) {
 				try {
-					if (new File(AudioPreferences.customResourceFolder + "/vorbis/" + archiveID + ".dat/").exists()) {
-						vorbisData = Files.readAllBytes(Paths.get(AudioPreferences.customResourceFolder + "/vorbis/" + archiveID + ".dat/"));
+					if (new File(AudioPreferences.customResourceFolder + "/vorbis/" + archiveID + ".ogg/").exists()) {
+						vorbisData = Files.readAllBytes(Paths.get(AudioPreferences.customResourceFolder + "/vorbis/" + archiveID + ".ogg/"));
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

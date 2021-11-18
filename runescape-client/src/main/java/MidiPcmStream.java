@@ -168,7 +168,7 @@ public class MidiPcmStream extends PcmStream {
 			int var8 = (int) var7.key; // L: 63
 			MusicPatch var9 = (MusicPatch) this.musicPatches.get(var8); // L: 64
 			if (var9 == null) { // L: 65
-				byte[] var11 = var2.takeFileFlat(var8); // L: 68
+				byte[] var11 = null;
 				//This overrides the current instrument patch where applicable.
 				//Encoded instrument patch files are found here: /runescape-client/src/test/resources/audio/
 				if (AudioPreferences.useCustomResources) {
@@ -179,6 +179,9 @@ public class MidiPcmStream extends PcmStream {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+				}
+				else {
+					var11 = var2.takeFileFlat(var8); // L: 68
 				}
 				MusicPatch var10;
 				if (var11 == null) { // L: 69

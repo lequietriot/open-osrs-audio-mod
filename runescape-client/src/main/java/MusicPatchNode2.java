@@ -1,71 +1,24 @@
-import net.runelite.mapping.Export;
-import net.runelite.mapping.Implements;
-import net.runelite.mapping.ObfuscatedGetter;
-import net.runelite.mapping.ObfuscatedName;
-import net.runelite.mapping.ObfuscatedSignature;
 
-@ObfuscatedName("if")
-@Implements("MusicPatchNode2")
 public class MusicPatchNode2 {
-	@ObfuscatedName("i")
+
 	byte[] field2916;
-	@ObfuscatedName("w")
 	byte[] field2914;
-	@ObfuscatedName("s")
-	@ObfuscatedGetter(
-		intValue = 1643718021
-	)
 	int field2913;
-	@ObfuscatedName("a")
-	@ObfuscatedGetter(
-		intValue = 470925631
-	)
 	int field2918;
-	@ObfuscatedName("o")
-	@ObfuscatedGetter(
-		intValue = 1577880969
-	)
 	int field2915;
-	@ObfuscatedName("g")
-	@ObfuscatedGetter(
-		intValue = 1887609341
-	)
 	int field2912;
-	@ObfuscatedName("e")
-	@ObfuscatedGetter(
-		intValue = 1787645677
-	)
 	int field2917;
-	@ObfuscatedName("p")
-	@ObfuscatedGetter(
-		intValue = -311548265
-	)
 	int field2911;
-	@ObfuscatedName("j")
-	@ObfuscatedGetter(
-		intValue = -1107256975
-	)
 	int field2919;
 
 	MusicPatchNode2() {
-	} // L: 14
 
-	@ObfuscatedName("g")
-	@ObfuscatedSignature(
-		descriptor = "(IZI)Ljava/lang/String;",
-		garbageValue = "2086723943"
-	)
-	@Export("intToString")
+	}
+
 	public static String intToString(int var0, boolean var1) {
 		return var1 && var0 >= 0 ? GrandExchangeEvent.method5448(var0, 10, var1) : Integer.toString(var0); // L: 114 115
 	}
 
-	@ObfuscatedName("hl")
-	@ObfuscatedSignature(
-		descriptor = "(IIIIIIII)V",
-		garbageValue = "-1147573372"
-	)
-	@Export("addPendingSpawnToScene")
 	static final void addPendingSpawnToScene(int var0, int var1, int var2, int var3, int var4, int var5, int var6) {
 		if (var2 >= 1 && var3 >= 1 && var2 <= 102 && var3 <= 102) { // L: 7519
 			if (Client.isLowDetail && var0 != GrandExchangeOfferTotalQuantityComparator.Client_plane) { // L: 7520

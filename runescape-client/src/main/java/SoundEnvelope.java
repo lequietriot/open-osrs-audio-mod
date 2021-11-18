@@ -1,4 +1,4 @@
-/**
+/*
  * SFX - Sound Envelope class
  * @author Rodolfo Ruiz-Velasco (https://github.com/lequietriot)
  *
@@ -30,21 +30,21 @@ public class SoundEnvelope {
 		this.phases[1] = 65535;
 	}
 
-	final void decode(Buffer stream) {
-		this.form = stream.readUnsignedByte();
-		this.start = stream.readInt();
-		this.end = stream.readInt();
-		this.decodeSegments(stream);
+	final void decode(Buffer buffer) {
+		this.form = buffer.readUnsignedByte();
+		this.start = buffer.readInt();
+		this.end = buffer.readInt();
+		this.decodeSegments(buffer);
 	}
 
-	final void decodeSegments(Buffer var1) {
-		this.segments = var1.readUnsignedByte();
+	final void decodeSegments(Buffer buffer) {
+		this.segments = buffer.readUnsignedByte();
 		this.durations = new int[this.segments];
 		this.phases = new int[this.segments];
 
 		for (int segment = 0; segment < this.segments; ++segment) {
-			this.durations[segment] = var1.readUnsignedShort();
-			this.phases[segment] = var1.readUnsignedShort();
+			this.durations[segment] = buffer.readUnsignedShort();
+			this.phases[segment] = buffer.readUnsignedShort();
 		}
 
 	}

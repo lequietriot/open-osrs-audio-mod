@@ -1,15 +1,12 @@
-import java.util.Random;
-
-/**
+/*
  * SFX - Sound Tone class
  * @author Rodolfo Ruiz-Velasco (https://github.com/lequietriot)
  *
  * Refactored using source(s):
  * https://www.rune-server.ee/runescape-development/rs2-client/snippets/421977-sound-effects.html
  * https://github.com/Jameskmonger/317refactor/blob/master/src/com/jagex/runescape/audio/Instrument.java
- *
- * TODO: Maybe use ByteBuffer for decoding methods?
  */
+import java.util.Random;
 
 public class SoundTone {
 

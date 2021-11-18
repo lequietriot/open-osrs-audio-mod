@@ -1,4 +1,4 @@
-/**
+/*
  * SFX - Sound Filter class
  * @author Rodolfo Ruiz-Velasco (https://github.com/lequietriot)
  *
@@ -94,29 +94,29 @@ public class SoundFilter {
 		}
 	}
 
-	final void decode(Buffer stream, SoundEnvelope envelope) {
-		int count = stream.readUnsignedByte();
+	final void decode(Buffer buffer, SoundEnvelope envelope) {
+		int count = buffer.readUnsignedByte();
 		this.pairs[0] = count >> 4;
 		this.pairs[1] = count & 15;
 		if (count != 0) {
-			this.unity[0] = stream.readUnsignedShort();
-			this.unity[1] = stream.readUnsignedShort();
-			int migrated = stream.readUnsignedByte();
+			this.unity[0] = buffer.readUnsignedShort();
+			this.unity[1] = buffer.readUnsignedShort();
+			int migrated = buffer.readUnsignedByte();
 
 			int direction;
 			int pair;
 			for (direction = 0; direction < 2; ++direction) {
 				for (pair = 0; pair < this.pairs[direction]; ++pair) {
-					this.phases[direction][0][pair] = stream.readUnsignedShort();
-					this.magnitudes[direction][0][pair] = stream.readUnsignedShort();
+					this.phases[direction][0][pair] = buffer.readUnsignedShort();
+					this.magnitudes[direction][0][pair] = buffer.readUnsignedShort();
 				}
 			}
 
 			for (direction = 0; direction < 2; ++direction) {
 				for (pair = 0; pair < this.pairs[direction]; ++pair) {
 					if ((migrated & 1 << direction * 4 << pair) != 0) {
-						this.phases[direction][1][pair] = stream.readUnsignedShort();
-						this.magnitudes[direction][1][pair] = stream.readUnsignedShort();
+						this.phases[direction][1][pair] = buffer.readUnsignedShort();
+						this.magnitudes[direction][1][pair] = buffer.readUnsignedShort();
 					} else {
 						this.phases[direction][1][pair] = this.phases[direction][0][pair];
 						this.magnitudes[direction][1][pair] = this.magnitudes[direction][0][pair];
@@ -125,7 +125,7 @@ public class SoundFilter {
 			}
 
 			if (migrated != 0 || this.unity[1] != this.unity[0]) {
-				envelope.decodeSegments(stream);
+				envelope.decodeSegments(buffer);
 			}
 		} else {
 			int[] unityArray = this.unity;
