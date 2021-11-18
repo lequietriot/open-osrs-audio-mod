@@ -65,11 +65,11 @@ public class MusicPatchPcmStream extends PcmStream {
 					var1.stream = RawPcmStream.method817(var1.rawSound, var10.method832(), var10.method936(), var10.method824()); // L: 87
 				} else {
 					var1.stream = RawPcmStream.method817(var1.rawSound, var10.method832(), 0, var10.method824()); // L: 90
-					this.superStream.method4765(var1, var1.patch.field2972[var1.field2990] < 0); // L: 91
+					this.superStream.method4765(var1, var1.patch.pitchOffset[var1.field2990] < 0); // L: 91
 					var1.stream.method941(var8, var10.method936()); // L: 92
 				}
 
-				if (var1.patch.field2972[var1.field2990] < 0) { // L: 94
+				if (var1.patch.pitchOffset[var1.field2990] < 0) { // L: 94
 					var1.stream.setNumLoops(-1);
 				}
 
@@ -99,10 +99,10 @@ public class MusicPatchPcmStream extends PcmStream {
 					var1.stream = RawPcmStream.method817(var1.rawSound, var1.stream.method832(), var1.stream.method936(), var1.stream.method824()); // L: 111
 				} else {
 					var1.stream = RawPcmStream.method817(var1.rawSound, var1.stream.method832(), 0, var1.stream.method824()); // L: 114
-					this.superStream.method4765(var1, var1.patch.field2972[var1.field2990] < 0); // L: 115
+					this.superStream.method4765(var1, var1.patch.pitchOffset[var1.field2990] < 0); // L: 115
 				}
 
-				if (var1.patch.field2972[var1.field2990] < 0) { // L: 117
+				if (var1.patch.pitchOffset[var1.field2990] < 0) { // L: 117
 					var1.stream.setNumLoops(-1);
 				}
 

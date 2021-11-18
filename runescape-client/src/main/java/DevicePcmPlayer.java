@@ -41,11 +41,6 @@ public class DevicePcmPlayer extends PcmPlayer {
 	protected void init() {
 		this.format = new AudioFormat((float)UserComparator2.sampleRate, 16, PcmPlayer.PcmPlayer_stereo ? 2 : 1, true, false); // L: 21
 		this.byteSamples = new byte[256 << (PcmPlayer.PcmPlayer_stereo ? 2 : 1)]; // L: 22
-		try {
-			DevicePcmPlayer.dataOutputStream = new DataOutputStream(new FileOutputStream(AudioPreferences.musicSaveFile + File.separator + FillMode.musicTrackGroupId + ".wav"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
 	} // L: 23
 
 	@ObfuscatedName("w")

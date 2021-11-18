@@ -1,467 +1,579 @@
-import java.net.URL;
-
 import net.runelite.rs.ScriptOpcodes;
+
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MusicPatch extends Node {
 
 	int field2973;
 	RawSound[] rawSounds;
-	short[] field2972;
+	short[] pitchOffset;
 	byte[] field2974;
 	byte[] field2971;
 	MusicPatchNode2[] field2976;
 	byte[] field2977;
-	int[] field2975;
+	int[] sampleOffset;
 
 	MusicPatch(byte[] var1) {
-		this.rawSounds = new RawSound[128]; // L: 21
-		this.field2972 = new short[128]; // L: 22
-		this.field2974 = new byte[128]; // L: 23
-		this.field2971 = new byte[128]; // L: 24
-		this.field2976 = new MusicPatchNode2[128]; // L: 25
-		this.field2977 = new byte[128]; // L: 26
-		this.field2975 = new int[128]; // L: 27
-		Buffer stream = new Buffer(var1); // L: 28
+		if (AudioPreferences.useCustomResources) {
+			this.rawSounds = new RawSound[128];
+			this.pitchOffset = new short[128];
+			this.field2974 = new byte[128];
+			this.field2971 = new byte[128];
+			this.field2976 = new MusicPatchNode2[128];
+			this.field2977 = new byte[128];
+			this.sampleOffset = new int[128];
+			try {
+				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(var1)));
+				List<String> list = bufferedReader.lines().collect(Collectors.toList());
 
-		int var3;
-		for (var3 = 0; stream.array[var3 + stream.offset] != 0; ++var3) { // L: 29 30
+				for (int index = 0; index < list.size(); index++) {
+
+					if (list.get(index).contains(AudioPreferences.SAMPLE_NAME)) {
+
+						String[] patchInfoList = new String[17];
+
+						for (int infoIndex = 0; infoIndex < 17; infoIndex++) {
+							patchInfoList[infoIndex] = list.get(index);
+							index++;
+						}
+
+						loadCustomPatch(patchInfoList);
+					}
+				}
+			} catch (IOException | UnsupportedAudioFileException ioException) {
+				ioException.printStackTrace();
+			}
 		}
+		else {
+			this.rawSounds = new RawSound[128]; // L: 21
+			this.pitchOffset = new short[128]; // L: 22
+			this.field2974 = new byte[128]; // L: 23
+			this.field2971 = new byte[128]; // L: 24
+			this.field2976 = new MusicPatchNode2[128]; // L: 25
+			this.field2977 = new byte[128]; // L: 26
+			this.sampleOffset = new int[128]; // L: 27
+			Buffer stream = new Buffer(var1); // L: 28
 
-		byte[] var4 = new byte[var3];
+			int var3;
+			for (var3 = 0; stream.array[var3 + stream.offset] != 0; ++var3) { // L: 29 30
+			}
 
-		int var5;
-		for (var5 = 0; var5 < var3; ++var5) { // L: 32
-			var4[var5] = stream.readByte();
-		}
+			byte[] var4 = new byte[var3];
 
-		++stream.offset;
-		++var3;
-		var5 = stream.offset;
-		stream.offset += var3;
+			int var5;
+			for (var5 = 0; var5 < var3; ++var5) { // L: 32
+				var4[var5] = stream.readByte();
+			}
 
-		int var6;
-		for (var6 = 0; stream.array[var6 + stream.offset] != 0; ++var6) {
-		}
+			++stream.offset;
+			++var3;
+			var5 = stream.offset;
+			stream.offset += var3;
 
-		byte[] var7 = new byte[var6];
+			int var6;
+			for (var6 = 0; stream.array[var6 + stream.offset] != 0; ++var6) {
+			}
 
-		int var8;
-		for (var8 = 0; var8 < var6; ++var8) {
-			var7[var8] = stream.readByte();
-		}
+			byte[] var7 = new byte[var6];
 
-		++stream.offset;
-		++var6;
-		var8 = stream.offset;
-		stream.offset += var6;
+			int var8;
+			for (var8 = 0; var8 < var6; ++var8) {
+				var7[var8] = stream.readByte();
+			}
 
-		int var9;
-		for (var9 = 0; stream.array[var9 + stream.offset] != 0; ++var9) {
-		}
+			++stream.offset;
+			++var6;
+			var8 = stream.offset;
+			stream.offset += var6;
 
-		byte[] var10 = new byte[var9];
+			int var9;
+			for (var9 = 0; stream.array[var9 + stream.offset] != 0; ++var9) {
+			}
 
-		for (int var11 = 0; var11 < var9; ++var11) {
-			var10[var11] = stream.readByte();
-		}
+			byte[] var10 = new byte[var9];
 
-		++stream.offset;
-		++var9;
-		byte[] var38 = new byte[var9];
-		int var12;
-		int var14;
-		if (var9 > 1) { // L: 53
-			var38[1] = 1; // L: 54
-			int var13 = 1;
-			var12 = 2;
+			for (int var11 = 0; var11 < var9; ++var11) {
+				var10[var11] = stream.readByte();
+			}
 
-			for (var14 = 2; var14 < var9; ++var14) {
-				int var43 = stream.readUnsignedByte(); // L: 58
-				if (var43 == 0) {
-					var13 = var12++;
-				} else {
-					if (var43 <= var13) { // L: 61
-						--var43;
+			++stream.offset;
+			++var9;
+			byte[] var38 = new byte[var9];
+			int var12;
+			int var14;
+			if (var9 > 1) { // L: 53
+				var38[1] = 1; // L: 54
+				int var13 = 1;
+				var12 = 2;
+
+				for (var14 = 2; var14 < var9; ++var14) {
+					int var43 = stream.readUnsignedByte(); // L: 58
+					if (var43 == 0) {
+						var13 = var12++;
+					} else {
+						if (var43 <= var13) { // L: 61
+							--var43;
+						}
+
+						var13 = var43; // L: 62
 					}
 
-					var13 = var43; // L: 62
+					var38[var14] = (byte) var13; // L: 64
+				}
+			} else {
+				var12 = var9; // L: 67
+			}
+
+			MusicPatchNode2[] var39 = new MusicPatchNode2[var12]; // L: 68
+
+			MusicPatchNode2 var15;
+			for (var14 = 0; var14 < var39.length; ++var14) { // L: 69
+				var15 = var39[var14] = new MusicPatchNode2(); // L: 70
+				int var42 = stream.readUnsignedByte(); // L: 71
+				if (var42 > 0) { // L: 72
+					var15.field2916 = new byte[var42 * 2];
 				}
 
-				var38[var14] = (byte)var13; // L: 64
+				var42 = stream.readUnsignedByte(); // L: 73
+				if (var42 > 0) { // L: 74
+					var15.field2914 = new byte[var42 * 2 + 2]; // L: 75
+					var15.field2914[1] = 64; // L: 76
+				}
 			}
+
+			var14 = stream.readUnsignedByte(); // L: 79
+			byte[] var44 = var14 > 0 ? new byte[var14 * 2] : null; // L: 80
+			var14 = stream.readUnsignedByte(); // L: 81
+			byte[] var16 = var14 > 0 ? new byte[var14 * 2] : null; // L: 82
+
+			int var17;
+			for (var17 = 0; stream.array[var17 + stream.offset] != 0; ++var17) { // L: 83 84
+			}
+
+			byte[] var18 = new byte[var17]; // L: 85
+
+			int var19;
+			for (var19 = 0; var19 < var17; ++var19) { // L: 86
+				var18[var19] = stream.readByte();
+			}
+
+			++stream.offset; // L: 87
+			++var17; // L: 88
+			var19 = 0; // L: 89
+
+			int var20;
+			for (var20 = 0; var20 < 128; ++var20) { // L: 90
+				var19 += stream.readUnsignedByte(); // L: 91
+				this.pitchOffset[var20] = (short) var19; // L: 92
+			}
+
+			var19 = 0; // L: 94
+
+			short[] var50;
+			for (var20 = 0; var20 < 128; ++var20) { // L: 95
+				var19 += stream.readUnsignedByte(); // L: 96
+				var50 = this.pitchOffset; // L: 97
+				var50[var20] = (short) (var50[var20] + (var19 << 8));
+			}
+
+			var20 = 0; // L: 99
+			int var21 = 0; // L: 100
+			int var22 = 0; // L: 101
+
+			int var23;
+			for (var23 = 0; var23 < 128; ++var23) { // L: 102
+				if (var20 == 0) { // L: 103
+					if (var21 < var18.length) { // L: 104
+						var20 = var18[var21++];
+					} else {
+						var20 = -1; // L: 105
+					}
+
+					var22 = stream.readVarInt(); // L: 106
+				}
+
+				var50 = this.pitchOffset; // L: 108
+				var50[var23] = (short) (var50[var23] + ((var22 - 1 & 2) << 14));
+				this.sampleOffset[var23] = var22; // L: 109
+				--var20; // L: 110
+			}
+
+			var20 = 0; // L: 112
+			var21 = 0; // L: 113
+			var23 = 0; // L: 114
+
+			int var24;
+			for (var24 = 0; var24 < 128; ++var24) { // L: 115
+				if (this.sampleOffset[var24] != 0) { // L: 116
+					if (var20 == 0) { // L: 117
+						if (var21 < var4.length) { // L: 118
+							var20 = var4[var21++];
+						} else {
+							var20 = -1; // L: 119
+						}
+
+						var23 = stream.array[var5++] - 1; // L: 120
+					}
+
+					this.field2977[var24] = (byte) var23; // L: 122
+					--var20; // L: 123
+				}
+			}
+
+			var20 = 0; // L: 125
+			var21 = 0; // L: 126
+			var24 = 0; // L: 127
+
+			for (int var25 = 0; var25 < 128; ++var25) { // L: 128
+				if (this.sampleOffset[var25] != 0) { // L: 129
+					if (var20 == 0) { // L: 130
+						if (var21 < var7.length) { // L: 131
+							var20 = var7[var21++];
+						} else {
+							var20 = -1; // L: 132
+						}
+
+						var24 = stream.array[var8++] + 16 << 2; // L: 133
+					}
+
+					this.field2971[var25] = (byte) var24; // L: 135
+					--var20; // L: 136
+				}
+			}
+
+			var20 = 0; // L: 138
+			var21 = 0; // L: 139
+			MusicPatchNode2 var40 = null; // L: 140
+
+			int var26;
+			for (var26 = 0; var26 < 128; ++var26) { // L: 141
+				if (this.sampleOffset[var26] != 0) { // L: 142
+					if (var20 == 0) { // L: 143
+						var40 = var39[var38[var21]]; // L: 144
+						if (var21 < var10.length) { // L: 145
+							var20 = var10[var21++];
+						} else {
+							var20 = -1; // L: 146
+						}
+					}
+
+					this.field2976[var26] = var40; // L: 148
+					--var20; // L: 149
+				}
+			}
+
+			var20 = 0; // L: 151
+			var21 = 0; // L: 152
+			var26 = 0; // L: 153
+
+			int var27;
+			for (var27 = 0; var27 < 128; ++var27) { // L: 154
+				if (var20 == 0) { // L: 155
+					if (var21 < var18.length) { // L: 156
+						var20 = var18[var21++];
+					} else {
+						var20 = -1; // L: 157
+					}
+
+					if (this.sampleOffset[var27] > 0) { // L: 158
+						var26 = stream.readUnsignedByte() + 1;
+					}
+				}
+
+				this.field2974[var27] = (byte) var26; // L: 160
+				--var20; // L: 161
+			}
+
+			this.field2973 = stream.readUnsignedByte() + 1; // L: 163
+
+			int var29;
+			MusicPatchNode2 var41;
+			for (var27 = 0; var27 < var12; ++var27) { // L: 164
+				var41 = var39[var27]; // L: 165
+				if (var41.field2916 != null) { // L: 166
+					for (var29 = 1; var29 < var41.field2916.length; var29 += 2) { // L: 167
+						var41.field2916[var29] = stream.readByte();
+					}
+				}
+
+				if (var41.field2914 != null) { // L: 169
+					for (var29 = 3; var29 < var41.field2914.length - 2; var29 += 2) { // L: 170
+						var41.field2914[var29] = stream.readByte();
+					}
+				}
+			}
+
+			if (var44 != null) { // L: 173
+				for (var27 = 1; var27 < var44.length; var27 += 2) { // L: 174
+					var44[var27] = stream.readByte();
+				}
+			}
+
+			if (var16 != null) { // L: 176
+				for (var27 = 1; var27 < var16.length; var27 += 2) { // L: 177
+					var16[var27] = stream.readByte();
+				}
+			}
+
+			for (var27 = 0; var27 < var12; ++var27) { // L: 179
+				var41 = var39[var27]; // L: 180
+				if (var41.field2914 != null) { // L: 181
+					var19 = 0; // L: 182
+
+					for (var29 = 2; var29 < var41.field2914.length; var29 += 2) { // L: 183
+						var19 = var19 + 1 + stream.readUnsignedByte(); // L: 184
+						var41.field2914[var29] = (byte) var19; // L: 185
+					}
+				}
+			}
+
+			for (var27 = 0; var27 < var12; ++var27) { // L: 189
+				var41 = var39[var27]; // L: 190
+				if (var41.field2916 != null) { // L: 191
+					var19 = 0; // L: 192
+
+					for (var29 = 2; var29 < var41.field2916.length; var29 += 2) { // L: 193
+						var19 = 1 + var19 + stream.readUnsignedByte(); // L: 194
+						var41.field2916[var29] = (byte) var19; // L: 195
+					}
+				}
+			}
+
+			byte var30;
+			int var32;
+			int var33;
+			int var34;
+			int var35;
+			int var36;
+			int var47;
+			byte var49;
+			if (var44 != null) { // L: 199
+				var19 = stream.readUnsignedByte(); // L: 200
+				var44[0] = (byte) var19; // L: 201
+
+				for (var27 = 2; var27 < var44.length; var27 += 2) { // L: 202
+					var19 = 1 + var19 + stream.readUnsignedByte(); // L: 203
+					var44[var27] = (byte) var19; // L: 204
+				}
+
+				var49 = var44[0]; // L: 206
+				byte var28 = var44[1]; // L: 207
+
+				for (var29 = 0; var29 < var49; ++var29) { // L: 208
+					this.field2974[var29] = (byte) (var28 * this.field2974[var29] + 32 >> 6);
+				}
+
+				for (var29 = 2; var29 < var44.length; var29 += 2) { // L: 209 210 227
+					var30 = var44[var29]; // L: 211
+					byte var31 = var44[var29 + 1]; // L: 212
+					var32 = var28 * (var30 - var49) + (var30 - var49) / 2; // L: 213
+
+					for (var33 = var49; var33 < var30; ++var33) { // L: 214
+						var35 = var30 - var49; // L: 216
+						var36 = var32 >>> 31; // L: 218
+						var34 = (var32 + var36) / var35 - var36; // L: 219
+						this.field2974[var33] = (byte) (var34 * this.field2974[var33] + 32 >> 6); // L: 222
+						var32 += var31 - var28; // L: 223
+					}
+
+					var49 = var30; // L: 225
+					var28 = var31; // L: 226
+				}
+
+				for (var47 = var49; var47 < 128; ++var47) { // L: 229
+					this.field2974[var47] = (byte) (var28 * this.field2974[var47] + 32 >> 6);
+				}
+
+				var15 = null; // L: 230
+			}
+
+			if (var16 != null) { // L: 232
+				var19 = stream.readUnsignedByte(); // L: 233
+				var16[0] = (byte) var19; // L: 234
+
+				for (var27 = 2; var27 < var16.length; var27 += 2) { // L: 235
+					var19 = var19 + 1 + stream.readUnsignedByte(); // L: 236
+					var16[var27] = (byte) var19; // L: 237
+				}
+
+				var49 = var16[0]; // L: 239
+				int var46 = var16[1] << 1; // L: 240
+
+				for (var29 = 0; var29 < var49; ++var29) { // L: 241
+					var47 = var46 + (this.field2971[var29] & 255); // L: 242
+					if (var47 < 0) { // L: 243
+						var47 = 0;
+					}
+
+					if (var47 > 128) { // L: 244
+						var47 = 128;
+					}
+
+					this.field2971[var29] = (byte) var47; // L: 245
+				}
+
+				int var48;
+				for (var29 = 2; var29 < var16.length; var29 += 2) { // L: 247 248 268
+					var30 = var16[var29]; // L: 249
+					var48 = var16[var29 + 1] << 1; // L: 250
+					var32 = var46 * (var30 - var49) + (var30 - var49) / 2; // L: 251
+
+					for (var33 = var49; var33 < var30; ++var33) { // L: 252
+						var35 = var30 - var49; // L: 254
+						var36 = var32 >>> 31; // L: 256
+						var34 = (var36 + var32) / var35 - var36; // L: 257
+						int var37 = var34 + (this.field2971[var33] & 255); // L: 260
+						if (var37 < 0) { // L: 261
+							var37 = 0;
+						}
+
+						if (var37 > 128) { // L: 262
+							var37 = 128;
+						}
+
+						this.field2971[var33] = (byte) var37; // L: 263
+						var32 += var48 - var46; // L: 264
+					}
+
+					var49 = var30; // L: 266
+					var46 = var48; // L: 267
+				}
+
+				for (var47 = var49; var47 < 128; ++var47) { // L: 270
+					var48 = var46 + (this.field2971[var47] & 255); // L: 271
+					if (var48 < 0) { // L: 272
+						var48 = 0;
+					}
+
+					if (var48 > 128) { // L: 273
+						var48 = 128;
+					}
+
+					this.field2971[var47] = (byte) var48; // L: 274
+				}
+
+				Object var45 = null; // L: 276
+			}
+
+			for (var27 = 0; var27 < var12; ++var27) { // L: 278
+				var39[var27].field2913 = stream.readUnsignedByte();
+			}
+
+			for (var27 = 0; var27 < var12; ++var27) { // L: 279
+				var41 = var39[var27]; // L: 280
+				if (var41.field2916 != null) { // L: 281
+					var41.field2918 = stream.readUnsignedByte();
+				}
+
+				if (var41.field2914 != null) { // L: 282
+					var41.field2915 = stream.readUnsignedByte();
+				}
+
+				if (var41.field2913 > 0) { // L: 283
+					var41.field2912 = stream.readUnsignedByte();
+				}
+			}
+
+			for (var27 = 0; var27 < var12; ++var27) { // L: 285
+				var39[var27].field2911 = stream.readUnsignedByte();
+			}
+
+			for (var27 = 0; var27 < var12; ++var27) { // L: 286
+				var41 = var39[var27]; // L: 287
+				if (var41.field2911 > 0) { // L: 288
+					var41.field2917 = stream.readUnsignedByte();
+				}
+			}
+
+			for (var27 = 0; var27 < var12; ++var27) { // L: 290
+				var41 = var39[var27]; // L: 291
+				if (var41.field2917 > 0) { // L: 292
+					var41.field2919 = stream.readUnsignedByte();
+				}
+			}
+		}
+	}
+
+	public void loadCustomPatch(String[] patchInfoList) throws IOException, UnsupportedAudioFileException {
+
+		String sampleName = patchInfoList[0].replace(AudioPreferences.SAMPLE_NAME, "").trim();
+		String cacheIndex = patchInfoList[1].replace(AudioPreferences.SAMPLE_INDEX, "").trim();
+
+		int loopMode = Integer.parseInt(patchInfoList[2].replace(AudioPreferences.LOOP_MODE, "").trim());
+		int rootKey = Integer.parseInt((patchInfoList[3].replace(AudioPreferences.SAMPLE_ROOT_KEY, "").trim()));
+		int keyIndex = Integer.parseInt(patchInfoList[4].replace(AudioPreferences.SAMPLE_KEY_INDEX, "").trim());
+		int masterVolume = Integer.parseInt(patchInfoList[5].replace(AudioPreferences.MASTER_VOLUME, "").trim());
+		int volume = Integer.parseInt(patchInfoList[6].replace(AudioPreferences.SAMPLE_VOLUME, "").trim());
+		int pan = Integer.parseInt(patchInfoList[7].replace(AudioPreferences.SAMPLE_PAN, "").trim());
+
+		field2973 = masterVolume;
+		field2977[keyIndex] = (byte) (loopMode);
+		pitchOffset[keyIndex] = (short) ((rootKey));
+		field2971[keyIndex] = (byte) pan;
+		field2974[keyIndex] = (byte) (volume);
+		if (cacheIndex.equals("vorbis")) {
+			sampleOffset[keyIndex] = ((Integer.parseInt(sampleName) + 1) * 4);
+		}
+		if (cacheIndex.equals("sfx")) {
+			sampleOffset[keyIndex] = ((Integer.parseInt(sampleName) + 1) * 4) & 1;
+		}
+
+		int globalParameter1 = Integer.parseInt(patchInfoList[8].replace(AudioPreferences.PARAMETER_1, "").trim());
+		int globalParameter2 = Integer.parseInt(patchInfoList[9].replace(AudioPreferences.PARAMETER_2, "").trim());
+		int globalParameter3 = Integer.parseInt(patchInfoList[10].replace(AudioPreferences.PARAMETER_3, "").trim());
+		int globalParameter4 = Integer.parseInt(patchInfoList[11].replace(AudioPreferences.PARAMETER_4, "").trim());
+		int globalParameter5 = Integer.parseInt(patchInfoList[12].replace(AudioPreferences.PARAMETER_5, "").trim());
+		int globalParameter6 = Integer.parseInt(patchInfoList[13].replace(AudioPreferences.PARAMETER_6, "").trim());
+		int globalParameter7 = Integer.parseInt(patchInfoList[14].replace(AudioPreferences.PARAMETER_7, "").trim());
+
+		String[] globalStringArray1 = patchInfoList[15].replace(AudioPreferences.ARRAY_1, "").split(",");
+		byte[] globalArray1 = new byte[globalStringArray1.length];
+
+		if (globalStringArray1[0].contains("null")) {
+			globalArray1 = null;
 		} else {
-			var12 = var9; // L: 67
-		}
-
-		MusicPatchNode2[] var39 = new MusicPatchNode2[var12]; // L: 68
-
-		MusicPatchNode2 var15;
-		for (var14 = 0; var14 < var39.length; ++var14) { // L: 69
-			var15 = var39[var14] = new MusicPatchNode2(); // L: 70
-			int var42 = stream.readUnsignedByte(); // L: 71
-			if (var42 > 0) { // L: 72
-				var15.field2916 = new byte[var42 * 2];
-			}
-
-			var42 = stream.readUnsignedByte(); // L: 73
-			if (var42 > 0) { // L: 74
-				var15.field2914 = new byte[var42 * 2 + 2]; // L: 75
-				var15.field2914[1] = 64; // L: 76
-			}
-		}
-
-		var14 = stream.readUnsignedByte(); // L: 79
-		byte[] var44 = var14 > 0 ? new byte[var14 * 2] : null; // L: 80
-		var14 = stream.readUnsignedByte(); // L: 81
-		byte[] var16 = var14 > 0 ? new byte[var14 * 2] : null; // L: 82
-
-		int var17;
-		for (var17 = 0; stream.array[var17 + stream.offset] != 0; ++var17) { // L: 83 84
-		}
-
-		byte[] var18 = new byte[var17]; // L: 85
-
-		int var19;
-		for (var19 = 0; var19 < var17; ++var19) { // L: 86
-			var18[var19] = stream.readByte();
-		}
-
-		++stream.offset; // L: 87
-		++var17; // L: 88
-		var19 = 0; // L: 89
-
-		int var20;
-		for (var20 = 0; var20 < 128; ++var20) { // L: 90
-			var19 += stream.readUnsignedByte(); // L: 91
-			this.field2972[var20] = (short)var19; // L: 92
-		}
-
-		var19 = 0; // L: 94
-
-		short[] var50;
-		for (var20 = 0; var20 < 128; ++var20) { // L: 95
-			var19 += stream.readUnsignedByte(); // L: 96
-			var50 = this.field2972; // L: 97
-			var50[var20] = (short)(var50[var20] + (var19 << 8));
-		}
-
-		var20 = 0; // L: 99
-		int var21 = 0; // L: 100
-		int var22 = 0; // L: 101
-
-		int var23;
-		for (var23 = 0; var23 < 128; ++var23) { // L: 102
-			if (var20 == 0) { // L: 103
-				if (var21 < var18.length) { // L: 104
-					var20 = var18[var21++];
-				} else {
-					var20 = -1; // L: 105
-				}
-
-				var22 = stream.readVarInt(); // L: 106
-			}
-
-			var50 = this.field2972; // L: 108
-			var50[var23] = (short)(var50[var23] + ((var22 - 1 & 2) << 14));
-			this.field2975[var23] = var22; // L: 109
-			--var20; // L: 110
-		}
-
-		var20 = 0; // L: 112
-		var21 = 0; // L: 113
-		var23 = 0; // L: 114
-
-		int var24;
-		for (var24 = 0; var24 < 128; ++var24) { // L: 115
-			if (this.field2975[var24] != 0) { // L: 116
-				if (var20 == 0) { // L: 117
-					if (var21 < var4.length) { // L: 118
-						var20 = var4[var21++];
-					} else {
-						var20 = -1; // L: 119
-					}
-
-					var23 = stream.array[var5++] - 1; // L: 120
-				}
-
-				this.field2977[var24] = (byte)var23; // L: 122
-				--var20; // L: 123
-			}
-		}
-
-		var20 = 0; // L: 125
-		var21 = 0; // L: 126
-		var24 = 0; // L: 127
-
-		for (int var25 = 0; var25 < 128; ++var25) { // L: 128
-			if (this.field2975[var25] != 0) { // L: 129
-				if (var20 == 0) { // L: 130
-					if (var21 < var7.length) { // L: 131
-						var20 = var7[var21++];
-					} else {
-						var20 = -1; // L: 132
-					}
-
-					var24 = stream.array[var8++] + 16 << 2; // L: 133
-				}
-
-				this.field2971[var25] = (byte)var24; // L: 135
-				--var20; // L: 136
-			}
-		}
-
-		var20 = 0; // L: 138
-		var21 = 0; // L: 139
-		MusicPatchNode2 var40 = null; // L: 140
-
-		int var26;
-		for (var26 = 0; var26 < 128; ++var26) { // L: 141
-			if (this.field2975[var26] != 0) { // L: 142
-				if (var20 == 0) { // L: 143
-					var40 = var39[var38[var21]]; // L: 144
-					if (var21 < var10.length) { // L: 145
-						var20 = var10[var21++];
-					} else {
-						var20 = -1; // L: 146
-					}
-				}
-
-				this.field2976[var26] = var40; // L: 148
-				--var20; // L: 149
-			}
-		}
-
-		var20 = 0; // L: 151
-		var21 = 0; // L: 152
-		var26 = 0; // L: 153
-
-		int var27;
-		for (var27 = 0; var27 < 128; ++var27) { // L: 154
-			if (var20 == 0) { // L: 155
-				if (var21 < var18.length) { // L: 156
-					var20 = var18[var21++];
-				} else {
-					var20 = -1; // L: 157
-				}
-
-				if (this.field2975[var27] > 0) { // L: 158
-					var26 = stream.readUnsignedByte() + 1;
-				}
-			}
-
-			this.field2974[var27] = (byte)var26; // L: 160
-			--var20; // L: 161
-		}
-
-		this.field2973 = stream.readUnsignedByte() + 1; // L: 163
-
-		int var29;
-		MusicPatchNode2 var41;
-		for (var27 = 0; var27 < var12; ++var27) { // L: 164
-			var41 = var39[var27]; // L: 165
-			if (var41.field2916 != null) { // L: 166
-				for (var29 = 1; var29 < var41.field2916.length; var29 += 2) { // L: 167
-					var41.field2916[var29] = stream.readByte();
-				}
-			}
-
-			if (var41.field2914 != null) { // L: 169
-				for (var29 = 3; var29 < var41.field2914.length - 2; var29 += 2) { // L: 170
-					var41.field2914[var29] = stream.readByte();
+			for (int index = 0; index < Objects.requireNonNull(globalArray1).length; index++) {
+				if (globalStringArray1[index].indexOf("[") != 0) {
+					String strings = globalStringArray1[index].substring(globalStringArray1[index].indexOf("[") + 1).trim();
+					globalArray1[index] = Byte.parseByte(strings.replace("[", "").replace("]", ""));
 				}
 			}
 		}
 
-		if (var44 != null) { // L: 173
-			for (var27 = 1; var27 < var44.length; var27 += 2) { // L: 174
-				var44[var27] = stream.readByte();
-			}
-		}
+		String[] globalStringArray2 = patchInfoList[16].replace(AudioPreferences.ARRAY_2, "").split(",");
+		byte[] globalArray2 = new byte[globalStringArray2.length];
 
-		if (var16 != null) { // L: 176
-			for (var27 = 1; var27 < var16.length; var27 += 2) { // L: 177
-				var16[var27] = stream.readByte();
-			}
-		}
+		if (globalStringArray2[0].contains("null")) {
+			globalArray2 = null;
+		} else {
 
-		for (var27 = 0; var27 < var12; ++var27) { // L: 179
-			var41 = var39[var27]; // L: 180
-			if (var41.field2914 != null) { // L: 181
-				var19 = 0; // L: 182
-
-				for (var29 = 2; var29 < var41.field2914.length; var29 += 2) { // L: 183
-					var19 = var19 + 1 + stream.readUnsignedByte(); // L: 184
-					var41.field2914[var29] = (byte)var19; // L: 185
+			for (int index = 0; index < Objects.requireNonNull(globalArray2).length; index++) {
+				if (globalStringArray2[index].indexOf("[") != 0) {
+					String strings = globalStringArray2[index].substring(globalStringArray2[index].indexOf("[") + 1).trim();
+					globalArray2[index] = Byte.parseByte(strings.replace("[", "").replace("]", ""));
 				}
 			}
 		}
 
-		for (var27 = 0; var27 < var12; ++var27) { // L: 189
-			var41 = var39[var27]; // L: 190
-			if (var41.field2916 != null) { // L: 191
-				var19 = 0; // L: 192
-
-				for (var29 = 2; var29 < var41.field2916.length; var29 += 2) { // L: 193
-					var19 = 1 + var19 + stream.readUnsignedByte(); // L: 194
-					var41.field2916[var29] = (byte)var19; // L: 195
-				}
-			}
-		}
-
-		byte var30;
-		int var32;
-		int var33;
-		int var34;
-		int var35;
-		int var36;
-		int var47;
-		byte var49;
-		if (var44 != null) { // L: 199
-			var19 = stream.readUnsignedByte(); // L: 200
-			var44[0] = (byte)var19; // L: 201
-
-			for (var27 = 2; var27 < var44.length; var27 += 2) { // L: 202
-				var19 = 1 + var19 + stream.readUnsignedByte(); // L: 203
-				var44[var27] = (byte)var19; // L: 204
-			}
-
-			var49 = var44[0]; // L: 206
-			byte var28 = var44[1]; // L: 207
-
-			for (var29 = 0; var29 < var49; ++var29) { // L: 208
-				this.field2974[var29] = (byte)(var28 * this.field2974[var29] + 32 >> 6);
-			}
-
-			for (var29 = 2; var29 < var44.length; var29 += 2) { // L: 209 210 227
-				var30 = var44[var29]; // L: 211
-				byte var31 = var44[var29 + 1]; // L: 212
-				var32 = var28 * (var30 - var49) + (var30 - var49) / 2; // L: 213
-
-				for (var33 = var49; var33 < var30; ++var33) { // L: 214
-					var35 = var30 - var49; // L: 216
-					var36 = var32 >>> 31; // L: 218
-					var34 = (var32 + var36) / var35 - var36; // L: 219
-					this.field2974[var33] = (byte)(var34 * this.field2974[var33] + 32 >> 6); // L: 222
-					var32 += var31 - var28; // L: 223
-				}
-
-				var49 = var30; // L: 225
-				var28 = var31; // L: 226
-			}
-
-			for (var47 = var49; var47 < 128; ++var47) { // L: 229
-				this.field2974[var47] = (byte)(var28 * this.field2974[var47] + 32 >> 6);
-			}
-
-			var15 = null; // L: 230
-		}
-
-		if (var16 != null) { // L: 232
-			var19 = stream.readUnsignedByte(); // L: 233
-			var16[0] = (byte)var19; // L: 234
-
-			for (var27 = 2; var27 < var16.length; var27 += 2) { // L: 235
-				var19 = var19 + 1 + stream.readUnsignedByte(); // L: 236
-				var16[var27] = (byte)var19; // L: 237
-			}
-
-			var49 = var16[0]; // L: 239
-			int var46 = var16[1] << 1; // L: 240
-
-			for (var29 = 0; var29 < var49; ++var29) { // L: 241
-				var47 = var46 + (this.field2971[var29] & 255); // L: 242
-				if (var47 < 0) { // L: 243
-					var47 = 0;
-				}
-
-				if (var47 > 128) { // L: 244
-					var47 = 128;
-				}
-
-				this.field2971[var29] = (byte)var47; // L: 245
-			}
-
-			int var48;
-			for (var29 = 2; var29 < var16.length; var29 += 2) { // L: 247 248 268
-				var30 = var16[var29]; // L: 249
-				var48 = var16[var29 + 1] << 1; // L: 250
-				var32 = var46 * (var30 - var49) + (var30 - var49) / 2; // L: 251
-
-				for (var33 = var49; var33 < var30; ++var33) { // L: 252
-					var35 = var30 - var49; // L: 254
-					var36 = var32 >>> 31; // L: 256
-					var34 = (var36 + var32) / var35 - var36; // L: 257
-					int var37 = var34 + (this.field2971[var33] & 255); // L: 260
-					if (var37 < 0) { // L: 261
-						var37 = 0;
-					}
-
-					if (var37 > 128) { // L: 262
-						var37 = 128;
-					}
-
-					this.field2971[var33] = (byte)var37; // L: 263
-					var32 += var48 - var46; // L: 264
-				}
-
-				var49 = var30; // L: 266
-				var46 = var48; // L: 267
-			}
-
-			for (var47 = var49; var47 < 128; ++var47) { // L: 270
-				var48 = var46 + (this.field2971[var47] & 255); // L: 271
-				if (var48 < 0) { // L: 272
-					var48 = 0;
-				}
-
-				if (var48 > 128) { // L: 273
-					var48 = 128;
-				}
-
-				this.field2971[var47] = (byte)var48; // L: 274
-			}
-
-			Object var45 = null; // L: 276
-		}
-
-		for (var27 = 0; var27 < var12; ++var27) { // L: 278
-			var39[var27].field2913 = stream.readUnsignedByte();
-		}
-
-		for (var27 = 0; var27 < var12; ++var27) { // L: 279
-			var41 = var39[var27]; // L: 280
-			if (var41.field2916 != null) { // L: 281
-				var41.field2918 = stream.readUnsignedByte();
-			}
-
-			if (var41.field2914 != null) { // L: 282
-				var41.field2915 = stream.readUnsignedByte();
-			}
-
-			if (var41.field2913 > 0) { // L: 283
-				var41.field2912 = stream.readUnsignedByte();
-			}
-		}
-
-		for (var27 = 0; var27 < var12; ++var27) { // L: 285
-			var39[var27].field2911 = stream.readUnsignedByte();
-		}
-
-		for (var27 = 0; var27 < var12; ++var27) { // L: 286
-			var41 = var39[var27]; // L: 287
-			if (var41.field2911 > 0) { // L: 288
-				var41.field2917 = stream.readUnsignedByte();
-			}
-		}
-
-		for (var27 = 0; var27 < var12; ++var27) { // L: 290
-			var41 = var39[var27]; // L: 291
-			if (var41.field2917 > 0) { // L: 292
-				var41.field2919 = stream.readUnsignedByte();
-			}
-		}
-
-	} // L: 294
+		field2976[keyIndex] = new MusicPatchNode2();
+		field2976[keyIndex].field2914 = globalArray1;
+		field2976[keyIndex].field2916 = globalArray2;
+		field2976[keyIndex].field2913 = globalParameter1;
+		field2976[keyIndex].field2918 = globalParameter2;
+		field2976[keyIndex].field2915 = globalParameter3;
+		field2976[keyIndex].field2912 = globalParameter4;
+		field2976[keyIndex].field2917 = globalParameter5;
+		field2976[keyIndex].field2911 = globalParameter6;
+		field2976[keyIndex].field2919 = globalParameter7;
+	}
 
 	boolean method4945(SoundCache var1, byte[] var2, int[] var3) {
 		boolean var4 = true; // L: 297
@@ -470,7 +582,7 @@ public class MusicPatch extends Node {
 
 		for (int var7 = 0; var7 < 128; ++var7) { // L: 300
 			if (var2 == null || var2[var7] != 0) { // L: 301
-				int var8 = this.field2975[var7]; // L: 302
+				int var8 = this.sampleOffset[var7]; // L: 302
 				if (var8 != 0) { // L: 303
 					if (var5 != var8) { // L: 304
 						var5 = var8--; // L: 305 306
@@ -488,7 +600,7 @@ public class MusicPatch extends Node {
 
 					if (var6 != null) { // L: 311
 						this.rawSounds[var7] = var6; // L: 312
-						this.field2975[var7] = 0; // L: 313
+						this.sampleOffset[var7] = 0; // L: 313
 					}
 				}
 			}
@@ -498,7 +610,7 @@ public class MusicPatch extends Node {
 	}
 
 	void clear() {
-		this.field2975 = null; // L: 321
+		this.sampleOffset = null; // L: 321
 	} // L: 322
 
 	static boolean loadWorlds() {

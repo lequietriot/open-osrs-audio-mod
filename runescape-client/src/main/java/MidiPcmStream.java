@@ -173,8 +173,8 @@ public class MidiPcmStream extends PcmStream {
 				//Encoded instrument patch files are found here: /runescape-client/src/test/resources/audio/
 				if (AudioPreferences.useCustomResources) {
 					try {
-						if (new File(AudioPreferences.customResourceFolder + "/instruments/" + var8 + ".dat/").exists()) {
-							var11 = Files.readAllBytes(Paths.get(AudioPreferences.customResourceFolder + "/instruments/" + var8 + ".dat/"));
+						if (new File(AudioPreferences.customResourceFolder + "/instruments/" + var8 + ".txt/").exists()) {
+							var11 = Files.readAllBytes(Paths.get(AudioPreferences.customResourceFolder + "/instruments/" + var8 + ".txt/"));
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -425,7 +425,7 @@ public class MidiPcmStream extends PcmStream {
 				var6.field2990 = var2; // L: 164
 				var6.field2991 = var3 * var3 * var9.field2974[var2] * var9.field2973 + 1024 >> 11; // L: 165
 				var6.field2992 = var9.field2971[var2] & 255; // L: 166
-				var6.field2993 = (var2 << 8) - (var9.field2972[var2] & 32767); // L: 167
+				var6.field2993 = (var2 << 8) - (var9.pitchOffset[var2] & 32767); // L: 167
 				var6.field2986 = 0; // L: 168
 				var6.field3004 = 0; // L: 169
 				var6.field2994 = 0; // L: 170
@@ -435,10 +435,10 @@ public class MidiPcmStream extends PcmStream {
 					var6.stream = RawPcmStream.method817(var5, this.method4778(var6), this.method4779(var6), this.method4780(var6)); // L: 174
 				} else {
 					var6.stream = RawPcmStream.method817(var5, this.method4778(var6), 0, this.method4780(var6)); // L: 177
-					this.method4765(var6, var9.field2972[var2] < 0); // L: 178
+					this.method4765(var6, var9.pitchOffset[var2] < 0); // L: 178
 				}
 
-				if (var9.field2972[var2] < 0) { // L: 180
+				if (var9.pitchOffset[var2] < 0) { // L: 180
 					var6.stream.setNumLoops(-1);
 				}
 
